@@ -25,7 +25,8 @@ contract DeployRaffle is Script {
             fundSubContract.fundSubscription(
                 config.vrfCoordinator,
                 config.subscriptionId,
-                config.linkToken
+                config.linkToken,
+                config.useNativePayment
             );
         }
 
@@ -36,7 +37,8 @@ contract DeployRaffle is Script {
             config.vrfCoordinator,
             config.gasLane,
             config.subscriptionId,
-            config.callbackGasLimit
+            config.callbackGasLimit,
+            config.useNativePayment
         );
         vm.stopBroadcast();
 

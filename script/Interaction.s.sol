@@ -46,14 +46,21 @@ contract FundSubscription is Script, CodeConstants {
         address vrfCoordinator = helperConfig.getConfig().vrfCoordinator;
         uint256 subscriptionId = helperConfig.getConfig().subscriptionId;
         address linkToken = helperConfig.getConfig().linkToken;
+        bool useNativePayment = helperConfig.getConfig().useNativePayment;
 
-        fundSubscription(vrfCoordinator, subscriptionId, linkToken);
+        fundSubscription(
+            vrfCoordinator,
+            subscriptionId,
+            linkToken,
+            useNativePayment
+        );
     }
 
     function fundSubscription(
         address vrfCoordinator,
         uint256 subscriptionId,
-        address linkToken
+        address linkToken,
+        bool useNativePayment
     ) public {
         console.log("Funding subscription: ", subscriptionId);
         console.log("Using vrfCoordinator: ", vrfCoordinator);
@@ -61,10 +68,17 @@ contract FundSubscription is Script, CodeConstants {
 
         if (block.chainid == LOCAL_CHAIN_ID) {
             vm.startBroadcast();
-            VRFCoordinatorV2_5Mock(vrfCoordinator).fundSubscription(
-                subscriptionId,
-                FUND_AMOUNT
-            );
+            if (useNativePayment) {
+                VRFCoordinatorV2_5Mock(vrfCoordinator)
+                    .fundSubscriptionWithNative{value: FUND_AMOUNT}(
+                    subscriptionId
+                );
+            } else {
+                VRFCoordinatorV2_5Mock(vrfCoordinator).fundSubscription(
+                    subscriptionId,
+                    FUND_AMOUNT
+                );
+            }
             vm.stopBroadcast();
         } else {
             vm.startBroadcast();

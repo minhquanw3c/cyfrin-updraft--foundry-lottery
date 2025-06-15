@@ -56,10 +56,11 @@ contract Raffle is VRFConsumerBaseV2Plus {
     bytes32 private immutable i_keyHash;
     uint256 private immutable i_subscriptionId;
     uint32 private immutable i_callbackGasLimit;
+    bool private immutable i_useNativePayment;
 
     address payable[] private s_players;
     uint256 private s_lastTimeStamp;
-    address private s_recentWinner;
+    address payable private s_recentWinner;
     RaffleState private s_raffleState;
 
     /* Events */
@@ -73,7 +74,8 @@ contract Raffle is VRFConsumerBaseV2Plus {
         address vrfCoordinator,
         bytes32 gasLane,
         uint256 subscriptionId,
-        uint32 callbackGasLimit
+        uint32 callbackGasLimit,
+        bool useNativePayment
     ) VRFConsumerBaseV2Plus(vrfCoordinator) {
         i_entranceFee = entranceFee;
         i_interval = interval;
@@ -82,6 +84,7 @@ contract Raffle is VRFConsumerBaseV2Plus {
         i_subscriptionId = subscriptionId;
         i_callbackGasLimit = callbackGasLimit;
         s_raffleState = RaffleState.OPEN;
+        i_useNativePayment = useNativePayment;
     }
 
     function enterRaffle() external payable {
@@ -136,7 +139,9 @@ contract Raffle is VRFConsumerBaseV2Plus {
                 callbackGasLimit: i_callbackGasLimit,
                 numWords: NUM_WORDS,
                 extraArgs: VRFV2PlusClient._argsToBytes(
-                    VRFV2PlusClient.ExtraArgsV1({nativePayment: false})
+                    VRFV2PlusClient.ExtraArgsV1({
+                        nativePayment: i_useNativePayment
+                    })
                 )
             });
 
@@ -176,5 +181,13 @@ contract Raffle is VRFConsumerBaseV2Plus {
 
     function getPlayer(uint256 indexOfPlayer) external view returns (address) {
         return s_players[indexOfPlayer];
+    }
+
+    function getLastTimeStamp() external view returns (uint256) {
+        return s_lastTimeStamp;
+    }
+
+    function getRecentWinner() external view returns (address) {
+        return s_recentWinner;
     }
 }

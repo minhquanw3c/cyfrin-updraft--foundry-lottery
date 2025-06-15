@@ -26,6 +26,7 @@ contract HelperConfig is Script, CodeConstants {
         uint256 subscriptionId;
         uint32 callbackGasLimit;
         address linkToken;
+        bool useNativePayment;
     }
 
     NetworkConfig public localNetworkConfig;
@@ -60,7 +61,8 @@ contract HelperConfig is Script, CodeConstants {
                 gasLane: 0x787d74caea10b2b357790d5b5247c2f63d1d91572a9846f780606e4d953677ae,
                 subscriptionId: 8802152951127888909069156409948492345995282787308147076542215178485023996768,
                 callbackGasLimit: 500000,
-                linkToken: 0x779877A7B0D9E8603169DdbD7836e478b4624789
+                linkToken: 0x779877A7B0D9E8603169DdbD7836e478b4624789,
+                useNativePayment: false
             });
     }
 
@@ -85,7 +87,8 @@ contract HelperConfig is Script, CodeConstants {
             gasLane: 0x787d74caea10b2b357790d5b5247c2f63d1d91572a9846f780606e4d953677ae,
             subscriptionId: 0,
             callbackGasLimit: 500000,
-            linkToken: address(linkToken)
+            linkToken: address(linkToken),
+            useNativePayment: true
         });
 
         return localNetworkConfig;
